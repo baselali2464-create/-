@@ -1,0 +1,235 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "Authenticated student or admin profile with academic metadata, preferences, RBAC role, and usage metrics.",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string", "description": "Firebase Auth UID matching document ID." },
+        "displayName": { "type": "string", "description": "User full display name." },
+        "email": { "type": "string", "description": "User email address (PII, restricted to owner and admin)." },
+        "photoUrl": { "type": "string", "description": "Optional avatar URL." },
+        "major": { "type": "string", "description": "Academic major (CS, SE, Cyber, AI)." },
+        "studyYear": { "type": "string", "description": "Academic level / year." },
+        "skills": { "type": "array", "description": "Bounded list of up to 15 technical skill tags." },
+        "preferredLanguage": { "type": "string", "enum": ["ar", "en"], "description": "Bilingual UI language preference." },
+        "aiStyle": { "type": "string", "enum": ["simple", "academic", "code", "summary", "quiz"], "description": "Default Gemini explanation style." },
+        "role": { "type": "string", "enum": ["student", "instructor", "admin"], "description": "RBAC role controlled by admins." },
+        "accountStatus": { "type": "string", "enum": ["active", "suspended"], "description": "Account status controlled by admins." },
+        "onboardingDone": { "type": "boolean", "description": "Whether onboarding flow is completed." },
+        "dailyTokensUsed": { "type": "integer", "description": "Estimated AI tokens consumed today." },
+        "gpa": { "type": "number", "description": "Academic GPA out of 5.0." },
+        "completedLessonsCount": { "type": "integer", "description": "Total completed lessons." },
+        "studyHoursWeek": { "type": "number", "description": "Weekly study hours logged." },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp set via FieldValue.serverTimestamp()." }
+      },
+      "required": ["uid", "displayName", "email", "major", "studyYear", "skills", "preferredLanguage", "aiStyle", "role", "accountStatus", "onboardingDone", "dailyTokensUsed", "gpa", "completedLessonsCount", "studyHoursWeek", "createdAt", "updatedAt"]
+    },
+    "CourseProgress": {
+      "title": "CourseProgress",
+      "description": "Per-course lesson completion state for a student.",
+      "type": "object",
+      "properties": {
+        "courseId": { "type": "string" },
+        "completedLessonIds": { "type": "array" },
+        "lastLessonId": { "type": "string" },
+        "progressPercent": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["courseId", "completedLessonIds", "lastLessonId", "progressPercent", "createdAt", "updatedAt"]
+    },
+    "LessonNote": {
+      "title": "LessonNote",
+      "description": "Timestamped study note authored by a student inside a lesson.",
+      "type": "object",
+      "properties": {
+        "courseId": { "type": "string" },
+        "lessonId": { "type": "string" },
+        "timestampLabel": { "type": "string" },
+        "content": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["courseId", "lessonId", "timestampLabel", "content", "createdAt", "updatedAt"]
+    },
+    "ReadingState": {
+      "title": "ReadingState",
+      "description": "Student reading progress and bookmark status for a digital library textbook.",
+      "type": "object",
+      "properties": {
+        "bookId": { "type": "string" },
+        "currentPage": { "type": "integer" },
+        "totalPages": { "type": "integer" },
+        "progressPercent": { "type": "integer" },
+        "bookmarked": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["bookId", "currentPage", "totalPages", "progressPercent", "bookmarked", "createdAt", "updatedAt"]
+    },
+    "BookHighlight": {
+      "title": "BookHighlight",
+      "description": "Highlighted textbook passage with personal note and optional Gemini explanation.",
+      "type": "object",
+      "properties": {
+        "bookId": { "type": "string" },
+        "page": { "type": "integer" },
+        "quote": { "type": "string" },
+        "note": { "type": "string" },
+        "aiExplanation": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["bookId", "page", "quote", "note", "createdAt", "updatedAt"]
+    },
+    "ExamAttempt": {
+      "title": "ExamAttempt",
+      "description": "Submitted technical exam attempt with score metrics and Gemini diagnostic feedback.",
+      "type": "object",
+      "properties": {
+        "examId": { "type": "string" },
+        "examTitle": { "type": "string" },
+        "scorePercent": { "type": "integer" },
+        "correctCount": { "type": "integer" },
+        "totalQuestions": { "type": "integer" },
+        "durationSeconds": { "type": "integer" },
+        "aiDiagnostics": { "type": "string" },
+        "status": { "type": "string", "enum": ["completed"] },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["examId", "examTitle", "scorePercent", "correctCount", "totalQuestions", "durationSeconds", "status", "createdAt", "updatedAt"]
+    },
+    "AiMessage": {
+      "title": "AiMessage",
+      "description": "Persistent AI Tutor chat message.",
+      "type": "object",
+      "properties": {
+        "sender": { "type": "string", "enum": ["user", "assistant"] },
+        "mode": { "type": "string", "enum": ["simple", "academic", "code", "summary", "quiz"] },
+        "text": { "type": "string" },
+        "tokensEstimate": { "type": "integer" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["sender", "mode", "text", "tokensEstimate", "createdAt"]
+    },
+    "StudyPlan": {
+      "title": "StudyPlan",
+      "description": "Gemini-generated personalized study schedule synced to a learning track.",
+      "type": "object",
+      "properties": {
+        "trackId": { "type": "string" },
+        "trackTitle": { "type": "string" },
+        "weeklyHours": { "type": "integer" },
+        "pace": { "type": "string", "enum": ["relaxed", "balanced", "intensive"] },
+        "scheduleMarkdown": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["trackId", "trackTitle", "weeklyHours", "pace", "scheduleMarkdown", "createdAt", "updatedAt"]
+    },
+    "CommunityPost": {
+      "title": "CommunityPost",
+      "description": "Shared academic discussion post in Student Communities.",
+      "type": "object",
+      "properties": {
+        "authorId": { "type": "string" },
+        "authorName": { "type": "string" },
+        "authorRole": { "type": "string" },
+        "authorAvatar": { "type": "string" },
+        "category": { "type": "string" },
+        "title": { "type": "string" },
+        "body": { "type": "string" },
+        "codeSnippet": { "type": "string" },
+        "visibility": { "type": "string", "enum": ["public"] },
+        "upvotes": { "type": "integer" },
+        "repliesCount": { "type": "integer" },
+        "aiDigest": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["authorId", "authorName", "authorRole", "category", "title", "body", "visibility", "upvotes", "repliesCount", "createdAt", "updatedAt"]
+    },
+    "AdminAiConfig": {
+      "title": "AdminAiConfig",
+      "description": "Global platform AI quota and guardrail configuration managed by admins.",
+      "type": "object",
+      "properties": {
+        "dailyStudentTokenLimit": { "type": "integer" },
+        "activeModel": { "type": "string" },
+        "codeModeEnabled": { "type": "boolean" },
+        "examHintsEnabled": { "type": "boolean" },
+        "safetyGuardrailsStrict": { "type": "boolean" },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["dailyStudentTokenLimit", "activeModel", "codeModeEnabled", "examHintsEnabled", "safetyGuardrailsStrict", "createdAt", "updatedAt"]
+    },
+    "LibraryAssetAudit": {
+      "title": "LibraryAssetAudit",
+      "description": "Digital library file security inspection and approval metadata.",
+      "type": "object",
+      "properties": {
+        "bookId": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "fileSizeMb": { "type": "number" },
+        "scanStatus": { "type": "string", "enum": ["verified", "scanning", "flagged", "quarantined"] },
+        "sha256Prefix": { "type": "string" },
+        "reviewerNote": { "type": "string" },
+        "visibility": { "type": "string", "enum": ["catalog"] },
+        "createdAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." },
+        "updatedAt": { "type": "string", "format": "date-time", "description": "Server timestamp via FieldValue.serverTimestamp()." }
+      },
+      "required": ["bookId", "title", "category", "fileSizeMb", "scanStatus", "sha256Prefix", "visibility", "createdAt", "updatedAt"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "User academic profile and preferences."
+    },
+    "/users/{userId}/courseProgress/{courseId}": {
+      "schema": { "$ref": "#/entities/CourseProgress" },
+      "description": "User progress per course."
+    },
+    "/users/{userId}/lessonNotes/{noteId}": {
+      "schema": { "$ref": "#/entities/LessonNote" },
+      "description": "Timestamped personal notes per lesson."
+    },
+    "/users/{userId}/readingState/{bookId}": {
+      "schema": { "$ref": "#/entities/ReadingState" },
+      "description": "Book reading page and bookmark state."
+    },
+    "/users/{userId}/highlights/{highlightId}": {
+      "schema": { "$ref": "#/entities/BookHighlight" },
+      "description": "Saved highlights and Gemini explanations inside books."
+    },
+    "/users/{userId}/examAttempts/{attemptId}": {
+      "schema": { "$ref": "#/entities/ExamAttempt" },
+      "description": "Completed exam attempts and AI diagnostics."
+    },
+    "/users/{userId}/aiMessages/{messageId}": {
+      "schema": { "$ref": "#/entities/AiMessage" },
+      "description": "Persistent AI tutor chat messages."
+    },
+    "/users/{userId}/studyPlans/{planId}": {
+      "schema": { "$ref": "#/entities/StudyPlan" },
+      "description": "Gemini-generated study schedules."
+    },
+    "/communityPosts/{postId}": {
+      "schema": { "$ref": "#/entities/CommunityPost" },
+      "description": "Shared student community discussions."
+    },
+    "/adminConfig/{configId}": {
+      "schema": { "$ref": "#/entities/AdminAiConfig" },
+      "description": "Global platform AI governance configuration."
+    },
+    "/libraryAssets/{assetId}": {
+      "schema": { "$ref": "#/entities/LibraryAssetAudit" },
+      "description": "Digital library file security inspection inventory."
+    }
+  }
+}
